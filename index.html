@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zaheen Khan</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+    #tapHint {
+      position: fixed;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px 16px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="tapHint">Tap the video to see my work</div>
+
+<a-scene mindar-image="imageTargetSrc: ./zaheen-card.mind; autoStart: true; uiLoading: no; uiError: no"
+         color-space="sRGB"
+         renderer="colorManagement: true"
+         vr-mode-ui="enabled: false"
+         device-orientation-permission-ui="enabled: false"
+         cursor="rayOrigin: mouse"
+         raycaster="objects: .clickable">
+
+  <a-assets>
+    <video id="showreel" src="showreel.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
+  </a-assets>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+  <a-entity id="card" mindar-image-target="targetIndex: 0">
+    <a-video class="clickable"
+             src="#showreel"
+             width="0.42"
+             height="0.236"
+             position="0.205 0.01 0.01">
+    </a-video>
+  </a-entity>
+</a-scene>
+
+<script>
+  const card = document.querySelector('#card');
+  const video = document.querySelector('#showreel');
+  const hint = document.getElementById('tapHint');
+  const clickable = document.querySelector('.clickable');
+
+  card.addEventListener('targetFound', () => {
+    video.play();
+    hint.style.display = 'block';
+  });
+
+  card.addEventListener('targetLost', () => {
+    video.pause();
+    hint.style.display = 'none';
+  });
+
+  // Tap the video to open the portfolio in a new tab
+  clickable.addEventListener('click', () => {
+    window.open('https://zaheenkhanportfolio.framer.website', '_blank');
+  });
+
+  // Fallback: if autoplay is blocked, tapping anywhere starts the video
+  document.body.addEventListener('click', () => {
+    if (video.paused) video.play();
+  });
+</script>
+
+</body>
+</html>
