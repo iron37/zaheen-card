@@ -14,7 +14,6 @@
       background: transparent !important;
     }
 
-    /* Make A-Frame's scene and canvas transparent so the camera shows through */
     a-scene, .a-canvas, canvas {
       background: transparent !important;
     }
@@ -47,21 +46,48 @@
       z-index: 6;
     }
 
-    #tapHint {
+    /* Everything that shows while the card is tracked */
+    #overlay {
       position: fixed;
-      bottom: 12%;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 8%;
+      left: 0;
+      right: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 20;
+    }
+
+    #credit {
       font-family: Helvetica, Arial, sans-serif;
       font-weight: 700;
-      color: #fff;
+      font-size: 15px;
+      color: #ffffff;
       background: rgba(0, 0, 0, 0.55);
-      padding: 10px 16px;
+      padding: 8px 16px;
       border-radius: 999px;
       pointer-events: none;
-      z-index: 10;
-      display: none;
       white-space: nowrap;
+    }
+
+    /* A real link, so the tap counts as a genuine gesture and is never blocked */
+    #portfolioBtn {
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: #000;
+      background: #ffffff;
+      padding: 15px 24px;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      text-decoration: none;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #portfolioBtn:active {
+      background: #e6e6e6;
     }
   </style>
 </head>
@@ -69,7 +95,13 @@
 
 <div id="guideText">Point your camera at the card</div>
 <div id="guide"></div>
-<div id="tapHint">Tap the video to see my work</div>
+
+<div id="overlay">
+  <div id="credit">Built by Zaheen Khan, in Unreal Engine 5</div>
+  <a id="portfolioBtn" href="https://zaheenkhanportfolio.framer.website" target="_blank" rel="noopener">
+    Tap to see the portfolio
+  </a>
+</div>
 
 <a-scene mindar-image="imageTargetSrc: ./zaheen-card.mind; autoStart: true; uiLoading: no; uiError: no"
          color-space="sRGB"
@@ -96,30 +128,45 @@
 </a-scene>
 
 <script>
+  const PORTFOLIO = 'https://zaheenkhanportfolio.framer.website';
+
   const card = document.querySelector('#card');
   const video = document.querySelector('#showreel');
-  const hint = document.getElementById('tapHint');
   const guide = document.getElementById('guide');
   const guideText = document.getElementById('guideText');
+  const overlay = document.getElementById('overlay');
+  const btn = document.getElementById('portfolioBtn');
   const clickable = document.querySelector('.clickable');
 
+  let cardVisible = false;
+
   card.addEventListener('targetFound', () => {
+    cardVisible = true;
     video.play();
-    hint.style.display = 'block';
+    overlay.style.display = 'flex';
     guide.style.display = 'none';
     guideText.style.display = 'none';
   });
 
   card.addEventListener('targetLost', () => {
+    cardVisible = false;
     video.pause();
-    hint.style.display = 'none';
+    overlay.style.display = 'none';
     guide.style.display = 'block';
     guideText.style.display = 'block';
   });
 
+  // Tapping the video goes to the portfolio.
+  // location.href is used instead of window.open, which phones block here.
   clickable.addEventListener('click', () => {
-    window.open('https://zaheenkhanportfolio.framer.website', '_blank');
+    window.location.href = PORTFOLIO;
   });
+
+  // If autoplay was blocked, a tap anywhere while the card is visible starts the video.
+  document.body.addEventListener('touchstart', (e) => {
+    if (e.target.closest('#portfolioBtn')) return;
+    if (video.paused && cardVisible) video.play();
+  }, { passive: true });
 </script>
 
 </body>
