@@ -7,6 +7,20 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
+        /* Force everything transparent so the camera feed shows through */
+    html, body, a-scene, .a-canvas, .a-enter-vr, .a-loader-title {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+    .a-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    /* MindAR's camera video must sit behind the 3D canvas */
+    video[autoplay] {
+      z-index: -2 !important;
+    }
     html, body {
       margin: 0;
       height: 100%;
