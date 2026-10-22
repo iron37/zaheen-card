@@ -7,28 +7,18 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
-        /* Force everything transparent so the camera feed shows through */
-    html, body, a-scene, .a-canvas, .a-enter-vr, .a-loader-title {
-      background: transparent !important;
-      background-color: transparent !important;
-    }
-    .a-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    /* MindAR's camera video must sit behind the 3D canvas */
-    video[autoplay] {
-      z-index: -2 !important;
-    }
     html, body {
       margin: 0;
       height: 100%;
       overflow: hidden;
-      background: transparent;
+      background: transparent !important;
     }
 
-    /* Guide box that shows where to place the card */
+    /* Make A-Frame's scene and canvas transparent so the camera shows through */
+    a-scene, .a-canvas, canvas {
+      background: transparent !important;
+    }
+
     #guide {
       position: fixed;
       top: 50%;
@@ -38,14 +28,13 @@
       aspect-ratio: 89 / 51;
       border: 3px dashed #ffffff;
       border-radius: 10px;
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
       pointer-events: none;
       z-index: 5;
     }
 
     #guideText {
       position: fixed;
-      top: calc(50% - min(72vw, 380px) * 0.26 - 48px);
+      top: 18%;
       left: 0;
       right: 0;
       text-align: center;
@@ -53,7 +42,7 @@
       font-weight: 700;
       font-size: 18px;
       color: #ffffff;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
       pointer-events: none;
       z-index: 6;
     }
@@ -84,7 +73,7 @@
 
 <a-scene mindar-image="imageTargetSrc: ./zaheen-card.mind; autoStart: true; uiLoading: no; uiError: no"
          color-space="sRGB"
-         renderer="colorManagement: true; alpha: true"
+         renderer="colorManagement: true; alpha: true; antialias: true"
          vr-mode-ui="enabled: false"
          device-orientation-permission-ui="enabled: false"
          cursor="rayOrigin: mouse"
@@ -130,10 +119,6 @@
 
   clickable.addEventListener('click', () => {
     window.open('https://zaheenkhanportfolio.framer.website', '_blank');
-  });
-
-  document.body.addEventListener('click', () => {
-    if (video.paused && card.object3D.visible) video.play();
   });
 </script>
 
