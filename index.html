@@ -7,7 +7,43 @@
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    /* Guide box that shows where to place the card */
+    #guide {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(72vw, 380px);
+      aspect-ratio: 89 / 51;
+      border: 3px dashed #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #guideText {
+      position: fixed;
+      top: calc(50% - min(72vw, 380px) * 0.26 - 48px);
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #ffffff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      z-index: 6;
+    }
+
     #tapHint {
       position: fixed;
       bottom: 12%;
@@ -28,11 +64,13 @@
 </head>
 <body>
 
+<div id="guideText">Point your camera at the card</div>
+<div id="guide"></div>
 <div id="tapHint">Tap the video to see my work</div>
 
 <a-scene mindar-image="imageTargetSrc: ./zaheen-card.mind; autoStart: true; uiLoading: no; uiError: no"
          color-space="sRGB"
-         renderer="colorManagement: true"
+         renderer="colorManagement: true; alpha: true"
          vr-mode-ui="enabled: false"
          device-orientation-permission-ui="enabled: false"
          cursor="rayOrigin: mouse"
@@ -58,26 +96,30 @@
   const card = document.querySelector('#card');
   const video = document.querySelector('#showreel');
   const hint = document.getElementById('tapHint');
+  const guide = document.getElementById('guide');
+  const guideText = document.getElementById('guideText');
   const clickable = document.querySelector('.clickable');
 
   card.addEventListener('targetFound', () => {
     video.play();
     hint.style.display = 'block';
+    guide.style.display = 'none';
+    guideText.style.display = 'none';
   });
 
   card.addEventListener('targetLost', () => {
     video.pause();
     hint.style.display = 'none';
+    guide.style.display = 'block';
+    guideText.style.display = 'block';
   });
 
-  // Tap the video to open the portfolio in a new tab
   clickable.addEventListener('click', () => {
     window.open('https://zaheenkhanportfolio.framer.website', '_blank');
   });
 
-  // Fallback: if autoplay is blocked, tapping anywhere starts the video
   document.body.addEventListener('click', () => {
-    if (video.paused) video.play();
+    if (video.paused && card.object3D.visible) video.play();
   });
 </script>
 
